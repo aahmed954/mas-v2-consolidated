@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 . "$(dirname "$0")/ensure_venv.sh"
 set -euo pipefail
+
+# Load environment variables
+. "$(dirname "$0")/../load_env.sh"
 REPO="$(cd "$(dirname "$0")/../.."; pwd)"
 ROOT="${1:?usage: run_forensic_ingest.sh /path/to/folder}"
 cd "$REPO"

@@ -1,6 +1,9 @@
 #!/bin/bash
 . "$(dirname "$0")/forensics/ensure_venv.sh"
 
+# Load environment variables
+. "$(dirname "$0")/scripts/load_env.sh"
+
 # Configuration
 SSH_TARGET="starlord@192.168.68.55"
 PROJECT_DIR="~/mas-v2-forensic"

@@ -73,7 +73,7 @@ def dump_key(hive: RegistryHive, root_path: str):
         return None
     out = {
         "path": root_path,
-        "last_written": key.header.last_modified.isoformat() if key.header and key.header.last_modified else None,
+        "last_written": key.header.last_modified.isoformat() if key.header and hasattr(key.header.last_modified, 'isoformat') else str(key.header.last_modified) if key.header and key.header.last_modified else None,
         "values": {},
         "subkeys": [sk.name for sk in key.iter_subkeys()]  # names only to keep size sane
     }
