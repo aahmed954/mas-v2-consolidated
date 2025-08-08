@@ -52,6 +52,13 @@ The system targets high-value forensic locations:
 - Windows system artifacts and logs
 
 
+## Operations
+- **Clean & rebuild core stack**: `make clean-rebuild`
+- **Start Qdrant (GPU)**: `make qdrant-up`
+- **Start observability**: `make obsv-up` (Prometheus on :9091, Grafana on :3000)
+- **Start Redis**: `make redis-up` (on :6380)
+- **Healthcheck Together**: `SKIP_M2BERT=1 PYTHONPATH=. python scripts/embed_healthcheck.py`
+
 ## Embeddings (TogetherAI, OpenAI-compatible)
 - Set `TOGETHER_API_KEY` in `.env`.
 - Default model: `BAAI/bge-base-en-v1.5-vllm` (768d).

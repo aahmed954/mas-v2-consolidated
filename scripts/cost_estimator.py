@@ -1,3 +1,4 @@
+import os, sys; sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 #!/usr/bin/env python3
 import sys
 from src.embeddings.models import get_model_meta

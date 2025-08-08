@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
+import os, sys; sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 import time
 from src.embeddings.client import EmbeddingClient
-from src.embeddings.models import MODEL_CATALOG
 from src.config import settings
+
+# Skip m2-bert if requested
+if os.getenv("SKIP_M2BERT"):
+    from src.embeddings.models import MODEL_CATALOG as _CAT
+    MODEL_CATALOG = {k:v for k,v in _CAT.items() if "m2-bert" not in k}
+else:
+    from src.embeddings.models import MODEL_CATALOG
 
 def check(model: str):
     client = EmbeddingClient(

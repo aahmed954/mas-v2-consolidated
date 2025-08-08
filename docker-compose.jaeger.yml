@@ -1,0 +1,9 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.58
+    container_name: masv2-jaeger
+    restart: unless-stopped
+    ports:
+      - "16686:16686"  # UI
+      - "14268:14268"  # HTTP ingest
+      - "6831:6831/udp"
