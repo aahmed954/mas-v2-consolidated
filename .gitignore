@@ -1,0 +1,16 @@
+# Data directories
+prom-data/
+loki-data/
+grafana-data/
+tempo-data/
+data/
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.local
+
+# OS files
+.DS_Store

@@ -1,0 +1,96 @@
+version: "3.9"
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: obs-prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.enable-lifecycle"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prom-data:/prometheus
+      - ./alerts:/etc/prometheus/alerts
+    ports: ["9090:9090"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9090/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  loki:
+    image: grafana/loki:latest
+    container_name: obs-loki
+    restart: unless-stopped
+    command: -config.file=/etc/loki/config.yml
+    volumes:
+      - ./loki-config.yml:/etc/loki/config.yml:ro
+      - ./loki-data:/loki
+    ports: ["3100:3100"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3100/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  tempo:
+    image: grafana/tempo:latest
+    container_name: obs-tempo
+    restart: unless-stopped
+    command: -config.file=/etc/tempo.yaml
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml:ro
+      - ./tempo-data:/var/tempo
+    ports: ["3200:3200", "4317:4317", "4318:4318"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3200/ready"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  pyroscope:
+    image: grafana/pyroscope:latest
+    container_name: obs-pyroscope
+    restart: unless-stopped
+    volumes:
+      - ./pyro.yaml:/etc/pyroscope/config.yaml:ro
+      - ./pyro-data:/var/lib/pyroscope
+    ports: ["4040:4040"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4040/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: obs-alertmanager
+    restart: unless-stopped
+    volumes:
+      - ./alertmanager.yml:/etc/alertmanager/config.yml:ro
+    ports: ["9093:9093"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:9093/-/healthy"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: obs-grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-pyroscope-datasource
+    volumes:
+      - ./grafana-data:/var/lib/grafana
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    ports: ["3000:3000"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3

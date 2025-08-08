@@ -1,0 +1,39 @@
+groups:
+- name: mas-core
+  interval: 15s
+  rules:
+  - alert: QdrantDown
+    expr: up{job="qdrant"} == 0
+    for: 30s
+    labels: 
+      severity: critical
+    annotations:
+      summary: "Qdrant down"
+      description: "No scrape from Qdrant at {{ $labels.instance }}"
+
+  - alert: QdrantWriteErrors
+    expr: rate(http_requests_total{job="qdrant",code=~"5.."}[5m]) > 0
+    for: 1m
+    labels: 
+      severity: warning
+    annotations:
+      summary: "Qdrant 5xx"
+      description: "Qdrant is returning 5xx in the last 5m"
+
+  - alert: GPUTooHot
+    expr: DCGM_FI_DEV_GPU_TEMP > 83
+    for: 3m
+    labels: 
+      severity: warning
+    annotations:
+      summary: "GPU hot"
+      description: "GPU at {{ $labels.instance }} over 83°C"
+
+  - alert: DiskNearlyFull
+    expr: (node_filesystem_size_bytes{mountpoint="/"} - node_filesystem_free_bytes{mountpoint="/"}) / node_filesystem_size_bytes{mountpoint="/"} > 0.90
+    for: 5m
+    labels: 
+      severity: warning
+    annotations:
+      summary: "Root FS > 90%"
+      description: "Free space low on {{ $labels.instance }}"

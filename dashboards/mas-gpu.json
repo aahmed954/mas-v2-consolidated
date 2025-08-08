@@ -1,0 +1,6 @@
+{ "title":"GPU Deep (DCGM)", "schemaVersion":38,
+  "panels":[
+    {"type":"timeseries","title":"GPU Util %","targets":[{"expr":"DCGM_FI_DEV_GPU_UTIL","datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"timeseries","title":"GPU Temp (°C)","targets":[{"expr":"DCGM_FI_DEV_GPU_TEMP","datasource":{"type":"prometheus","uid":"PROMDS"}}]}
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "title":"Golden Signals (MAS)",
+  "uid":"mas-golden",
+  "schemaVersion":38,
+  "links":[
+    {"type":"link","title":"▶️ Run System Check","url":"http://starlord:8088/system-check/run?key=REPLACE_WITH_CONTROL_API_KEY","targetBlank":true},
+    {"type":"link","title":"Control API (health)","url":"http://starlord:8088/health","targetBlank":true},
+    {"type":"link","title":"Qdrant UI","url":"http://starlord:6333","targetBlank":true}
+  ],
+  "panels":[
+    {"type":"stat","title":"Qdrant UP","gridPos":{"w":6,"h":3,"x":0,"y":0},
+     "targets":[{"expr":"up{job=\"qdrant\"}","datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"timeseries","title":"Qdrant 5xx rate","gridPos":{"w":12,"h":6,"x":6,"y":0},
+     "targets":[{"expr":"rate(http_requests_total{job=\"qdrant\",code=~\"5..\"}[5m])","datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"timeseries","title":"GPU Temp (°C)","gridPos":{"w":6,"h":6,"x":0,"y":3},
+     "targets":[{"expr":"DCGM_FI_DEV_GPU_TEMP","datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"timeseries","title":"GPU Util %","gridPos":{"w":6,"h":6,"x":6,"y":6},
+     "targets":[{"expr":"DCGM_FI_DEV_GPU_UTIL","datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"timeseries","title":"Embedding batch rate (from logs)","gridPos":{"w":12,"h":6,"x":12,"y":3},
+     "targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"sum(rate({job=\"masv2\",host=\"starlord\"} |= \"tokens=\" [5m]))"}]},
+    {"type":"timeseries","title":"System Check Duration (p95)","gridPos":{"w":12,"h":6,"x":0,"y":9},
+     "targets":[{"expr":"histogram_quantile(0.95, sum(rate(control_request_seconds_bucket{path=\"/system-check\"}[5m])) by (le))",
+                 "datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"stat","title":"System Checks (15m)","gridPos":{"w":6,"h":3,"x":12,"y":9},
+     "targets":[{"expr":"sum(increase(control_requests_total{path=\"/system-check\"}[15m]))",
+                 "datasource":{"type":"prometheus","uid":"PROMDS"}}]},
+    {"type":"stat","title":"429 Storms (5m)","gridPos":{"w":6,"h":3,"x":18,"y":9},
+     "targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"sum(rate({job=\"masv2\",host:\"starlord\"} |= \"HTTP 429\" [5m]))"}]}
+  ]
+}
