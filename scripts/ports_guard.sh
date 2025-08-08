@@ -31,10 +31,23 @@ fi
 
 echo "== Attempting to free our expected ports =="
 
-# 1) Stop our known containers that expose these ports
+# allow-list: do NOT stop our running Qdrant
+ALLOW_IMAGES_REGEX="^(qdrant/qdrant)(:.*)?$"
+ALLOW_NAMES_REGEX="^(masv2-qdrant)$"
+
+# 1) Stop our known containers that expose these ports EXCEPT allow-listed ones
 if docker ps --format '{{.Names}} {{.Ports}}' | egrep -i "${OUR_CONTAINERS_REGEX}" >/dev/null 2>&1; then
-  echo "[INFO] Stopping our docker containers matching ${OUR_CONTAINERS_REGEX}..."
-  docker ps --format '{{.ID}} {{.Names}} {{.Ports}}' | egrep -i "${OUR_CONTAINERS_REGEX}" | awk '{print $1}' | xargs -r docker stop
+  echo "[INFO] Processing docker containers matching ${OUR_CONTAINERS_REGEX}..."
+  for id in $(docker ps --format '{{.ID}} {{.Names}} {{.Image}}' | egrep -i "${OUR_CONTAINERS_REGEX}" | awk '{print $1}'); do
+    img="$(docker inspect --format='{{.Config.Image}}' "$id" 2>/dev/null || echo '')"
+    name="$(docker inspect --format='{{.Name}}' "$id" 2>/dev/null | sed 's#^/##' || echo '')"
+    if [[ "$img" =~ $ALLOW_IMAGES_REGEX ]] || [[ "$name" =~ $ALLOW_NAMES_REGEX ]]; then
+      echo "[INFO] Skipping allow-listed container: $name ($img)"
+      continue
+    fi
+    echo "[INFO] Stopping container: $name ($img)"
+    docker stop "$id"
+  done
 fi
 
 # 2) Stop system services that might still be pinned

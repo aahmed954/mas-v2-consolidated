@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+. ~/.otel-env-mas 2>/dev/null || true
+exec opentelemetry-instrument python "$@"

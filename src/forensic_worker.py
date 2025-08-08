@@ -10,7 +10,7 @@ import whisper
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct
 from rq import Worker
-from src.embeddings.client import EmbeddingClient
+from src.embeddings import get_embeddings
 from src.embeddings.models import get_model_meta
 from src.config import settings
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -25,15 +25,7 @@ logger = logging.getLogger(__name__)
 # Initialize Qdrant Client
 qdrant_client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
 
-# Embedding client (Together/OpenAI-compatible)
-embed_client = EmbeddingClient(
-    api_key=settings.TOGETHER_API_KEY,
-    base_url=settings.TOGETHER_BASE_URL,
-    model=settings.TOGETHER_EMBEDDING_MODEL,
-    backend=settings.EMBEDDINGS_BACKEND,
-    l2_normalize=settings.EMBEDDINGS_L2_NORMALIZE,
-    max_batch=settings.EMBEDDINGS_MAX_BATCH,
-)
+# Embeddings will use the failover client automatically
 
 def ensure_qdrant_collection(collection_name: str, dim: int):
     from qdrant_client.http.models import Distance, VectorParams
@@ -153,8 +145,11 @@ def process_database(file_path, collection, batch_id):
 
 def upload_to_qdrant(texts, source_path, collection, batch_id):
     ensure_qdrant_collection(collection, get_model_meta(settings.TOGETHER_EMBEDDING_MODEL).dim)
-    # Note: 'enrichment' parameter is removed
-    vectors, _ = embed_client.embed_texts(texts)
+    # Use failover embeddings
+    result = get_embeddings(texts, normalize=True)
+    vectors = result["vectors"]
+    provider = result["provider"]
+    
     points = []
     for i, text in enumerate(texts):
         payload = {
@@ -164,6 +159,8 @@ def upload_to_qdrant(texts, source_path, collection, batch_id):
             "file_type": os.path.splitext(source_path)[1].lower(),
             # Set summary to PENDING. Pipeline B will update it.
             "forensic_summary": "PENDING",
+            # Track which provider was used
+            "embedding_provider": provider,
         }
         # CRITICAL: We use UUID4 here. Pipeline B uses this ID as custom_id.
         points.append(PointStruct(id=str(uuid4()), vector=vectors[i], payload=payload))

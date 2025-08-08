@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO="$HOME/mas-v2-consolidated"
+STATE="$REPO/.queue_state"
+
+case "${1:-status}" in
+  status)
+    echo "=== Queue Status ==="
+    echo "Running: $(find "$STATE/running" -type f 2>/dev/null | wc -l)"
+    echo "Done:    $(find "$STATE/done" -type f 2>/dev/null | wc -l)"
+    echo "Failed:  $(find "$STATE/failed" -type f 2>/dev/null | wc -l)"
+    echo
+    echo "=== Running Jobs ==="
+    for f in "$STATE/running"/*; do
+      [[ -f "$f" ]] && echo "  $(basename "$f")"
+    done 2>/dev/null || echo "  (none)"
+    echo
+    echo "=== Service Status ==="
+    systemctl --user status masv2-queue.service --no-pager --lines=5
+    ;;
+  tail)
+    echo "=== Latest Queue Logs ==="
+    tail -f "$REPO/logs/queue"/*.log 2>/dev/null || echo "No logs yet"
+    ;;
+  running)
+    ls -1 "$STATE/running" 2>/dev/null || true
+    ;;
+  done)
+    ls -1 "$STATE/done" 2>/dev/null || true
+    ;;
+  failed)
+    ls -1 "$STATE/failed" 2>/dev/null || true
+    ;;
+  logs)
+    ls -lt "$REPO/logs/queue"/*.log 2>/dev/null | head -20
+    ;;
+  *)
+    echo "Usage: $0 {status|tail|running|done|failed|logs}"
+    exit 1
+    ;;
+esac
