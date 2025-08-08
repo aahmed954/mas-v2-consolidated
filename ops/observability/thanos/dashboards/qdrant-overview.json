@@ -1,0 +1,7 @@
+{ "title":"Qdrant Overview","panels":[
+  { "type":"stat","title":"Collections","targets":[{"expr":"collections_total"}]},
+  { "type":"timeseries","title":"Requests (rate)","targets":[{"expr":"rate(http_requests_total[5m])"}]},
+  { "type":"timeseries","title":"Request Duration p95","targets":[{"expr":"histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))"}]},
+  { "type":"timeseries","title":"HNSW Builds/Merges","targets":[{"expr":"rate(hnsw_index_builds_total[5m])"}]},
+  { "type":"timeseries","title":"Segments","targets":[{"expr":"segments_total"}]}
+], "schemaVersion":38 }

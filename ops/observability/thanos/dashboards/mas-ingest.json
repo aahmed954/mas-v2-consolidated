@@ -1,0 +1,6 @@
+{ "title":"MAS Ingestion (Loki)","panels":[
+  { "type":"stat","title":"Embedding Batches (15m)","targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"sum(count_over_time({job=\"masv2\",host=\"starlord\"} |= \"tokens=\" [15m]))"}]},
+  { "type":"timeseries","title":"Tokens per Batch","targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"sum by (batch) (rate(({job=\"masv2\",host=\"starlord\"} |= \"tokens=\" | regexp \"tokens=(?P<tokens>[0-9]+)\" | unwrap tokens | __line__)[5m]))"}]},
+  { "type":"timeseries","title":"Latency p95 (ms)","targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"quantile_over_time(0.95, ({job=\"masv2\",host=\"starlord\"} |= \"latency=\" | regexp \"latency=(?P<ms>[0-9]+)\" | unwrap ms [5m]))"}]},
+  { "type":"stat","title":"Rate limits (429) 15m","targets":[{"datasource":{"type":"loki","uid":"LOKIDS"},"expr":"sum(count_over_time({job=\"masv2\",host=\"starlord\"} |= \"HTTP 429\" [15m]))"}]}
+], "schemaVersion":38 }

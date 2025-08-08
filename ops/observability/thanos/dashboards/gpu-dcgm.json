@@ -1,0 +1,6 @@
+{ "title":"GPU (DCGM) - Starlord","panels":[
+  { "type":"timeseries","title":"GPU Util %","targets":[{"expr":"DCGM_FI_DEV_GPU_UTIL"}]},
+  { "type":"timeseries","title":"Mem Used (MiB)","targets":[{"expr":"DCGM_FI_DEV_FB_USED"}]},
+  { "type":"timeseries","title":"SM Clock (MHz)","targets":[{"expr":"DCGM_FI_DEV_SM_CLOCK"}]},
+  { "type":"timeseries","title":"Memory Temp (C)","targets":[{"expr":"DCGM_FI_DEV_MEMORY_TEMP"}]}
+], "schemaVersion":38 }

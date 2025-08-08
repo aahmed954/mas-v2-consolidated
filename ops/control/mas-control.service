@@ -1,0 +1,13 @@
+[Unit]
+Description=MAS Control API (FastAPI)
+After=network.target docker.service
+[Service]
+User=starlord
+Environment=CONTROL_API_KEY=J3cSv/eWIZGNNKaTsnVOlxpYmSPboqLQ9n4LoyB7Hn0=
+Environment=MAS_REPO=/home/starlord/mas-v2-consolidated
+WorkingDirectory=/home/starlord/mas-v2-consolidated/ops/control
+ExecStart=/home/starlord/.venvs/masv2/bin/uvicorn app:app --host 0.0.0.0 --port 8088
+Restart=always
+RestartSec=2
+[Install]
+WantedBy=multi-user.target
