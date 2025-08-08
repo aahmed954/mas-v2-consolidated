@@ -1,4 +1,5 @@
 #!/bin/bash
+. "$(dirname "$0")/forensics/ensure_venv.sh"
 
 # Configuration
 SSH_TARGET="starlord@192.168.68.55"

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/forensics/ensure_venv.sh"
 set -euo pipefail
+
+# Ensure ports/services are clean before proceeding
+AUTO_FIX=1 ./scripts/ports_guard.sh
 
 echo "== Stop/disable known systemd services (ignore if absent) =="
 for svc in qdrant redis-server redis prometheus grafana; do

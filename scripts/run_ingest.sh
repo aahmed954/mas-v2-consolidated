@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+. "$(dirname "$0")/forensics/ensure_venv.sh"
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

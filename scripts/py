@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# ensure venv then exec python
+. "$(dirname "$0")/forensics/ensure_venv.sh"
+exec python "$@"

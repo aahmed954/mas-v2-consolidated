@@ -14,7 +14,7 @@ def auth(x_api_key: str | None):
 def sh(cmd:str): return subprocess.run(cmd, shell=True, capture_output=True, text=True)
 @app.get("/health")
 def health():
-    t0=time.time(); r=sh("curl -s -o /dev/null -w '%{http_code}' http://localhost:6333/ready")
+    t0=time.time(); r=sh("curl -s -o /dev/null -w '%{http_code}' http://localhost:6333/")
     ok=r.stdout.strip()=="200"; LAT.labels("/health").observe(time.time()-t0); REQS.labels("/health","200" if ok else "500").inc()
     return {"qdrant_ready":ok,"http":r.stdout.strip()}
 @app.get("/metrics") 

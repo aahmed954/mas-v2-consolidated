@@ -1,4 +1,4 @@
-.PHONY: qdrant-up qdrant-down qdrant-cpu obsv-up obsv-down redis-up redis-down clean-rebuild
+.PHONY: qdrant-up qdrant-down qdrant-cpu obsv-up obsv-down redis-up redis-down clean-rebuild ports-guard
 
 qdrant-up:
 	docker compose -f docker-compose.gpu.yml up -d
@@ -23,3 +23,6 @@ redis-down:
 
 clean-rebuild:
 	scripts/clean_rebuild.sh
+
+ports-guard:
+	AUTO_FIX=1 ./scripts/ports_guard.sh
