@@ -1,0 +1,65 @@
+# docker-compose.infra.yml
+version: '3.8'
+
+services:
+  # --- Database and Queue Layer ---
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: masv2-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant_storage:/qdrant/storage
+
+  redis:
+    image: redis:latest
+    container_name: masv2-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes # Persistence Enabled
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis_data:/data
+
+  # --- Monitoring Layer (Uses Host Networking for simplicity) ---
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: masv2-prometheus
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+    command: ['--config.file=/etc/prometheus/prometheus.yml']
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: masv2-grafana
+    restart: unless-stopped
+    network_mode: host # Runs on port 3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # CRITICAL: Change this!
+      - GF_INSTALL_PLUGINS=redis-datasource
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: masv2-jaeger
+    restart: unless-stopped
+    network_mode: host # UI on 16686
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: masv2-node-exporter
+    network_mode: host
+    pid: host
+    volumes: ["/:/host:ro,rslave"]
+    command: ['--path.rootfs=/host']
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: masv2-redis-exporter
+    network_mode: host
+    environment:
+      # Connects to Redis on the host
+      - REDIS_ADDR=localhost:6379

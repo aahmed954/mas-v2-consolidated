@@ -1,0 +1,39 @@
+# Core Application, Queue, and Database
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic
+pydantic-settings
+requests
+tenacity # For API retries
+redis
+rq
+rich
+qdrant-client
+sqlalchemy # For database extraction
+pandas
+
+# AI/ML - Together.AI and LangChain
+together>=1.5.13  # Required for the Batch API SDK
+langchain
+langchain-core
+langchain-community
+langchain-together
+
+# Observability (Prometheus, Jaeger, Langfuse)
+prometheus-client
+
+# Comprehensive Data Extraction
+unstructured[all-docs]
+
+# Forensic OCR (GPU)
+paddleocr
+# paddlepaddle-gpu (Installed separately via launch script)
+
+# Audio/Video Transcription (GPU)
+openai-whisper
+ffmpeg-python
+torch # Installed separately via launch script
+
+# Utilities
+python-magic

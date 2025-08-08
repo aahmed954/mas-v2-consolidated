@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["localhost:9100"]
+  - job_name: "mas-api"
+    static_configs:
+      # Scrape Phase 1 API
+      - targets: ["localhost:8000"]
+    metrics_path: "/metrics"
+  - job_name: "qdrant"
+    static_configs:
+      - targets: ["localhost:6333"]
+  - job_name: "redis-queue"
+    static_configs:
+      # Redis exporter runs on 9121 via host networking
+      - targets: ["localhost:9121"]
