@@ -15,6 +15,16 @@ class Settings:
     QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
     QDRANT_PORT = int(os.getenv("QDRANT_PORT", "6333"))
 
+    # Safe defaults (env overrides take precedence)
+    QDRANT_COLLECTION = os.getenv("COLLECTION", "mas_embeddings")
+    REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+    WHISPER_MODEL_SIZE = os.getenv("WHISPER_MODEL_SIZE", "base")
+    OCR_STRATEGY = os.getenv("OCR_STRATEGY", "hi_res")
+    ENRICHMENT_LLM_MODEL = os.getenv(
+        "ENRICHMENT_LLM_MODEL", "meta-llama-3-70b-instruct"
+    )
+
     # Deprecated batch dir (left here so old paths don't explode)
     BATCH_PROCESSING_DIR = os.path.abspath("./data/batch_processing")
 
