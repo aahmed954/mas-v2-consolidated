@@ -19,12 +19,16 @@ class Settings(BaseSettings):
     # Together.AI
     TOGETHER_API_KEY: str = os.getenv("TOGETHER_API_KEY", "")
     # Pipeline A: Real-time embeddings (E5-Large for multilingual support)
-    TOGETHER_EMBEDDING_MODEL: str = "intfloat/multilingual-e5-large-instruct"
+    TOGETHER_EMBEDDING_MODEL: str = os.getenv("TOGETHER_EMBEDDING_MODEL","BAAI/bge-base-en-v1.5-vllm")
 
     # Pipeline B: Batch API Enrichment Model (Must be supported by Batch API)
     TOGETHER_LLM_MODEL: str = "meta-llama/Llama-3-70b-chat-hf"
+TOGETHER_BASE_URL: str = os.getenv("TOGETHER_BASE_URL","https://api.together.xyz/v1")
+EMBEDDINGS_BACKEND: str = os.getenv("EMBEDDINGS_BACKEND","together")
+EMBEDDINGS_L2_NORMALIZE: bool = os.getenv("EMBEDDINGS_L2_NORMALIZE","false").lower()=="true"
+EMBEDDINGS_MAX_BATCH: int = int(os.getenv("EMBEDDINGS_MAX_BATCH","32"))
 
-    # Directory for JSONL files (Batch API) - Stored locally on Starlord
+# Directory for JSONL files (Batch API) - Stored locally on Starlord
     BATCH_PROCESSING_DIR: str = os.path.abspath("./data/batch_processing")
 
     # Processing (RTX 4090 utilization)

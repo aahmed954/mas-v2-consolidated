@@ -50,3 +50,16 @@ The system targets high-value forensic locations:
 - OneDrive sync logs
 - Browser databases and cache files
 - Windows system artifacts and logs
+
+
+## Embeddings (TogetherAI, OpenAI-compatible)
+- Set `TOGETHER_API_KEY` in `.env`.
+- Default model: `BAAI/bge-base-en-v1.5-vllm` (768d).
+### Quick Start
+```
+python scripts/embed_healthcheck.py
+```
+### Cost
+```
+python scripts/cost_estimator.py BAAI/bge-large-en-v1.5 1000000
+```

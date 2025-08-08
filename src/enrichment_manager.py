@@ -7,14 +7,21 @@ import time
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import FieldCondition, Filter, MatchValue
 from src.config import settings
-from together import Together
+from src.embeddings.client import EmbeddingClient
+from src.embeddings.models import get_model_meta
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("EnrichmentManager")
 
 # Initialize Clients
-together_client = Together(api_key=settings.TOGETHER_API_KEY)
 qdrant_client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+
+embed_client = EmbeddingClient(
+    api_key=settings.TOGETHER_API_KEY,
+    base_url=settings.TOGETHER_BASE_URL,
+    model=settings.TOGETHER_EMBEDDING_MODEL,
+)
+
 
 SUMMARY_PROMPT_TEMPLATE = """You are a forensic analyst. Summarize the extracted text accurately. 
 Focus on key events, entities (people, IPs, locations), and critical artifacts.

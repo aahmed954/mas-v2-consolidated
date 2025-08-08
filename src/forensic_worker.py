@@ -10,7 +10,8 @@ import whisper
 from qdrant_client import QdrantClient
 from qdrant_client.http.models import PointStruct
 from rq import Worker
-from src.batch_embedding_service import embedding_service
+from src.embeddings.client import EmbeddingClient
+from src.embeddings.models import get_model_meta
 from src.config import settings
 from tenacity import retry, stop_after_attempt, wait_exponential
 from unstructured.chunking.title import chunk_by_title
@@ -23,6 +24,34 @@ logger = logging.getLogger(__name__)
 
 # Initialize Qdrant Client
 qdrant_client = QdrantClient(host=settings.QDRANT_HOST, port=settings.QDRANT_PORT)
+
+# Embedding client (Together/OpenAI-compatible)
+embed_client = EmbeddingClient(
+    api_key=settings.TOGETHER_API_KEY,
+    base_url=settings.TOGETHER_BASE_URL,
+    model=settings.TOGETHER_EMBEDDING_MODEL,
+    backend=settings.EMBEDDINGS_BACKEND,
+    l2_normalize=settings.EMBEDDINGS_L2_NORMALIZE,
+    max_batch=settings.EMBEDDINGS_MAX_BATCH,
+)
+
+def ensure_qdrant_collection(collection_name: str, dim: int):
+    from qdrant_client.http.models import Distance, VectorParams
+    try:
+        info = qdrant_client.get_collection(collection_name)
+        existing_dim = info.config.params.vectors.size  # type: ignore
+        if existing_dim != dim:
+            raise RuntimeError(
+                f"Qdrant collection '{collection_name}' has dim={existing_dim}, "
+                f"but embedding model requires dim={dim}. Create a new collection or re-embed."
+            )
+    except Exception:
+        qdrant_client.recreate_collection(
+            collection_name=collection_name,
+            vectors_config=VectorParams(size=dim, distance=Distance.COSINE),
+        )
+        logger.info(f"Created Qdrant collection '{collection_name}' with size={dim} (COSINE).")
+
 
 # Initialize Whisper Model (Local GPU)
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -123,8 +152,9 @@ def process_database(file_path, collection, batch_id):
 
 
 def upload_to_qdrant(texts, source_path, collection, batch_id):
+    ensure_qdrant_collection(collection, get_model_meta(settings.TOGETHER_EMBEDDING_MODEL).dim)
     # Note: 'enrichment' parameter is removed
-    vectors = generate_embeddings(texts)
+    vectors, _ = embed_client.embed_texts(texts)
     points = []
     for i, text in enumerate(texts):
         payload = {
@@ -149,7 +179,7 @@ def upload_to_qdrant(texts, source_path, collection, batch_id):
             qdrant_client.create_collection(
                 collection_name=collection,
                 vectors_config=VectorParams(
-                    size=1024, distance=Distance.COSINE  # BGE-M3 embedding size
+                    size=get_model_meta(settings.TOGETHER_EMBEDDING_MODEL).dim, distance=Distance.COSINE  # BGE-M3 embedding size
                 ),
             )
             logger.info(
