@@ -94,3 +94,16 @@ dmypy.json
 
 # Trunk
 .trunk/
+
+# Generated files
+catalog-summary.json
+manifest.jsonl
+manifest.jsonl.sig
+forensic_report.html
+forensic_report.md
+
+# Storage directories
+grafana_storage/
+qdrant_storage/
+redis_data/
+artifact_dump/
