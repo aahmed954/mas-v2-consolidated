@@ -1,0 +1,23 @@
+[Unit]
+Description=MAS v2 Autoscaler (Prometheus-driven)
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=PROM_URL=http://192.168.68.67:9090
+Environment=PROM_INSTANCE=starlord:9100
+Environment=GPU_JOB=dcgm
+Environment=MIN_PARALLEL=1
+Environment=MAX_PARALLEL_CAP=12
+Environment=TARGET_UTIL=0.85
+Environment=GPU_TARGET_UTIL=0.92
+Environment=STATE_DIR=%h/mas-v2-consolidated/.queue_state
+WorkingDirectory=%h/mas-v2-consolidated
+ExecStart=%h/mas-v2-consolidated/scripts/queue/autoscaler.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+

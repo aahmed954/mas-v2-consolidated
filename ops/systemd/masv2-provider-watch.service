@@ -1,0 +1,15 @@
+[Unit]
+Description=MAS v2 Provider Switch Watcher
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=SLACK_WEBHOOK=
+ExecStart=%h/mas-v2-consolidated/scripts/watch/provider_watcher.sh
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+
+

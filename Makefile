@@ -1,3 +1,25 @@
+.PHONY: up down status health qdrant tei
+
+up: qdrant tei
+	@echo "Services started."
+
+down:
+	-docker compose -f ~/qdrant/docker-compose.yml down
+	-docker compose -f ~/local-emb/docker-compose.yml down
+
+status:
+	@echo "Qdrant:" && curl -s http://localhost:6333/ | jq .status || true
+	@echo "TEI:" && curl -s http://localhost:8085/health | jq . || true
+
+health:
+	. ~/.venvs/masv2/bin/activate && SKIP_M2BERT=1 PYTHONPATH=. python scripts/embed_healthcheck.py
+
+qdrant:
+	@docker compose -f ~/qdrant/docker-compose.yml up -d
+
+tei:
+	@docker compose -f ~/local-emb/docker-compose.yml up -d
+
 .PHONY: qdrant-up qdrant-down qdrant-cpu obsv-up obsv-down redis-up redis-down clean-rebuild ports-guard
 
 qdrant-up:
