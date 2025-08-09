@@ -8,6 +8,7 @@ import sqlalchemy
 import torch
 import whisper
 from qdrant_client import QdrantClient
+from .payload_router import route_payload
 from qdrant_client.http.models import PointStruct
 from rq import Worker
 from src.embeddings.client import EmbeddingClient
@@ -165,7 +166,8 @@ def upload_to_qdrant(texts, source_path, collection, batch_id):
             # Set summary to PENDING. Pipeline B will update it.
             "forensic_summary": "PENDING",
         }
-        # CRITICAL: We use UUID4 here. Pipeline B uses this ID as custom_id.
+        
+        payload = route_payload(source_path, payload, chunk_text)# CRITICAL: We use UUID4 here. Pipeline B uses this ID as custom_id.
         points.append(PointStruct(id=str(uuid4()), vector=vectors[i], payload=payload))
 
     if points:
