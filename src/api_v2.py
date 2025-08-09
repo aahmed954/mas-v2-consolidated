@@ -13,13 +13,14 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 from qdrant_client.http.models import Distance, VectorParams
 from rq import Queue
 from src.config import settings
+from src.embeddings.models import get_model_meta
 from src.forensic_worker import process_forensic_file
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Define the parameters for the BGE-M3 model
-VECTOR_DIMENSIONS = 1024
+# Determine embedding vector dimensions from configured model
+VECTOR_DIMENSIONS = get_model_meta(settings.TOGETHER_EMBEDDING_MODEL).dim
 
 
 def initialize_qdrant():
@@ -127,3 +128,44 @@ if __name__ == "__main__":
 
     uvicorn.run(app, host="0.0.0.0", port=8002)
     uvicorn.run(app, host="0.0.0.0", port=8002)
+
+# ===== Work Buddy Integration Endpoint =====
+@app.post("/embed")
+async def create_embeddings(request: dict):
+    """
+    Embedding endpoint for Work Buddy RAG integration.
+    Uses existing EmbeddingClient with GPU acceleration.
+    """
+    from src.embeddings.client import EmbeddingClient
+    import os
+    
+    texts = request.get("texts", [request.get("text", "")])
+    if isinstance(texts, str):
+        texts = [texts]
+    
+    try:
+        # Use your existing embedding infrastructure
+        client = EmbeddingClient(
+            api_key=os.getenv("TOGETHER_API_KEY", ""),
+            base_url=os.getenv("TOGETHER_BASE_URL", "https://api.together.xyz"),
+            model=request.get("model", "BAAI/bge-base-en-v1.5-vllm"),
+            backend=os.getenv("EMBEDDINGS_BACKEND", "together"),
+            l2_normalize=False,
+            max_batch=32
+        )
+        
+        # Get embeddings
+        embeddings = []
+        for text in texts:
+            embedding = client.embed([text])[0]
+            embeddings.append(embedding.tolist() if hasattr(embedding, "tolist") else embedding)
+        
+        return {
+            "embeddings": embeddings,
+            "model": request.get("model", "BAAI/bge-base-en-v1.5-vllm"),
+            "dimensions": len(embeddings[0]) if embeddings else 768
+        }
+        
+    except Exception as e:
+        logger.error(f"Embedding failed: {e}")
+        return JSONResponse(status_code=500, content={"error": str(e)})

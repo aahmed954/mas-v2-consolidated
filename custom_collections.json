@@ -1,0 +1,21 @@
+{
+  "collections": [
+    "work-buddy-general",
+    "work-buddy-leather-business",
+    "work-buddy-import-export",
+    "work-buddy-legal-estate",
+    "work-buddy-correspondence",
+    "work-buddy-finance-tax",
+    "work-buddy-medical"
+  ],
+  "distribution": {
+    "work-buddy-general": 113,
+    "work-buddy-leather-business": 14775,
+    "work-buddy-import-export": 6587,
+    "work-buddy-legal-estate": 1573,
+    "work-buddy-correspondence": 42,
+    "work-buddy-finance-tax": 11470,
+    "work-buddy-medical": 2
+  },
+  "total_files": 34562
+}

@@ -1,0 +1,22 @@
+{
+  "collections": [
+    "work-buddy-estate",
+    "work-buddy-correspondence",
+    "work-buddy-medical",
+    "work-buddy-legal",
+    "work-buddy-business",
+    "work-buddy-personal",
+    "work-buddy-finance"
+  ],
+  "total_files": 34562,
+  "categories": {
+    "uncategorized": 12970,
+    "estate": 444,
+    "correspondence": 1422,
+    "medical": 2039,
+    "legal": 67,
+    "business": 3120,
+    "personal": 2488,
+    "finance": 12012
+  }
+}

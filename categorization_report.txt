@@ -1,0 +1,90 @@
+🔍 Scanning /home/starlord/raycastfiles/Life...
+Found 35100 files to analyze
+
+============================================================
+📊 AUTO-CATEGORIZATION REPORT
+============================================================
+
+📁 Suggested Collections:
+  work-buddy-uncategorized: 12970 files
+  work-buddy-finance: 12012 files
+  work-buddy-business: 3120 files
+  work-buddy-personal: 2488 files
+  work-buddy-medical: 2039 files
+  work-buddy-correspondence: 1422 files
+  work-buddy-estate: 444 files
+  work-buddy-legal: 67 files
+
+📄 Sample Files by Category:
+
+BUSINESS:
+  • Quality Control Pictures -PureTime Order ID 289251.eml
+  • Re_ Re_ Quality Control Pictures -PureTime Order ID K292115.eml
+  • PureTime Watches_ Shipment # 100069897 for Order # 100292115 已换表.eml
+
+CORRESPONDENCE:
+  • Payment update email.html
+  • Email (1).html
+  • Account confirmation for Azhar Ahmed 2.eml
+
+ESTATE:
+  • Chrome Passwords.csv
+  • social-security-statement (8).pdf
+  • ACCESS_FLORIDA_APPLICATION_DETAILS_624386294 (1).pdf
+
+FINANCE:
+  • Navigating Widow's Financial Aftermath.md
+  • Custody Lawsuit Email Draft.md
+  • .DS_Store
+
+LEGAL:
+  • Download Aftab Ahmed Grievance Case Summary.docx
+  • Litigation Package Generation Request
+.md
+  • TB Lawsuit Strategic Playbook
+.md
+
+MEDICAL:
+  • Download HealthSummary_Summary_Jun_27_2025_FINAL.docx
+  • Medical Malpractice Strategy Playbook.md
+  • Health Records (3).pdf
+
+PERSONAL:
+  • AI Benefits Across Sectors.md
+  • Employee Rights and Discrimination.md
+  • Therapy Session Opening.md
+
+🎯 Categorization Confidence:
+  High confidence: 14372 files
+  Medium confidence: 4155 files
+  Low confidence: 3065 files
+  Uncategorized: 12970 files
+
+📂 Directory Pattern Analysis:
+  medical: 64 matching directories
+  business: 58 matching directories
+  estate: 53 matching directories
+  correspondence: 42 matching directories
+  personal: 34 matching directories
+
+💾 Exported mapping to categorization_map.json
+   Review and adjust before ingestion
+
+============================================================
+🚀 RECOMMENDED SETUP
+============================================================
+
+Based on your documents, create these collections:
+  • work-buddy-estate
+  • work-buddy-correspondence
+  • work-buddy-medical
+  • work-buddy-legal
+  • work-buddy-business
+  • work-buddy-personal
+  • work-buddy-finance
+
+✨ Next Steps:
+1. Review categorization_map.json
+2. Adjust any miscategorized files
+3. Run ingestion with these collections
+4. Enjoy lightning-fast targeted search!

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -euo
 
 STATE="$HOME/mas-v2-consolidated/.queue_state"
 LOG="$HOME/mas-v2-consolidated/logs/provider_watcher.log"
@@ -16,8 +16,8 @@ notify(){
 }
 
 while :; do
-  cur="$(tail -n 500 "$HOME/mas-v2-consolidated/logs/embedding.log" 2>/dev/null | \
-        grep -Eo 'provider=(together|local)' | tail -n1 | sed 's/provider=//')"
+  cur="$( { tail -n 500 "$HOME/mas-v2-consolidated/logs/embedding.log" 2>/dev/null || true; } | \
+        grep -Eo 'provider=(together|local)' || true | tail -n1 | sed 's/provider=//' || true)"
   [ -z "$cur" ] && { sleep 10; continue; }
   if [ "$cur" != "$LAST" ]; then
     echo "$(date -Is) provider=$cur" | tee -a "$LOG"
